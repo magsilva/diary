@@ -1,0 +1,40 @@
+h1 {
+	font-family: arial, helvetica, sans-serif;
+	font-size: xx-large;
+	font-size: white;
+	color: black;
+	text-align: left;
+}
+
+h2 {
+	font-weight: bold;
+	font-size: black;
+	color: black;
+	background-color: #FFF1C8;
+	border-width: 1px;
+	border: solid;
+	padding: 10px;
+	margin-left: 10px;
+	margin-top: 40px;
+}
+
+p.content {
+	color: black;
+	margin-left: 30px;
+}
+
+p.author {
+	display: run-in;
+}
+
+body {
+	background-color: white;
+}
+
+div.entry {
+}
+
+span.img {
+	border: 0;
+	clear: both;
+}
