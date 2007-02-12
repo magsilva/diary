@@ -1,0 +1,12 @@
+RSS2Writer
+==========
+
+A convenience class to generate RSS 2.0 feeds
+
+-> see doc/RSS2Writer/RSS2Writer.html for documentation
+-> see examples/ for examples
+
+Authors
+=======
+
+Daniel Lorch <daniel@lorch.cc> 2006

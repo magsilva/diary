@@ -1,24 +1,24 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
 
 <?php
-	require_once( "txt_diary.php" );
-	$diary = new txt_diary();
+	require_once('diary.php');
+	$diary = new diary();
 ?>
 
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
-	<meta name="author" content="<?php echo $diary->author; ?>" />
-	<title><?php echo $diary->name; ?></title>
+	<meta name="author" content="<?php echo $diary->get_author(); ?>" />
+	<title><?php echo $diary->get_title(); ?></title>
 	<link href="diary.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
 
 <?php
-	echo "<h1 class=\"name\">" . $diary->name . "</h1>\n\n";
-	echo "<p class=\"description\">" . $diary->description . "</p>\n\n\n";
+	echo "<h1 class=\"name\">" . $diary->get_title() . "</h1>\n\n";
+	echo "<p class=\"description\">" . $diary->get_description() . "</p>\n\n\n";
 ?>
 
 <div align="right">
@@ -29,74 +29,88 @@
 </div>
 
 <?php
-
-	/**
-	* Check if a specified data has been request or it's to show everything.
-	*/
-	if ( ! isset( $_REQUEST[ "entry" ] ) ) {
-		$entries = $diary->get_all_entries();
-	} else {
-		$entries = array();
-		$key = strtotime( $_REQUEST[ "entry" ] );
-		$entries[] = $diary->get_entry( $key );
-		if ( is_null( $entries[ 0 ] ) ) {
-			unset( $entries[ 0 ] );
-		}
+	/*
+	if (isset($_REQUEST['slice'])) {
+		$slice = $_REQUEST['slice'];
 	}
+	*/
 
 	/**
 	* Check if private data must be shown (check the password).
 	*/
+	$show_private = FALSE;
 	if ( isset( $_REQUEST[ "password" ] ) ) {
-		if ( $_REQUEST[ "password" ] == $diary->password ) {
-			$diary->enable_private = 1;
+		if ($diary->is_password_correct($_REQUEST[ "password" ])) {
+			$show_private = TRUE;
 		}
 	}
 
 
 	/**
-	* Get asked entries.
+	* Check if a specified data has been request or it's to show last week's
+	* activity.
 	*/
-	if ( count( $entries ) > 0 ) {
-		arsort( $entries );
-		foreach ( $entries as $entry ) {
-			echo "<div class=\"entry\" id=\"entry$entry->date\">\n";
-			echo "\t<h2><a name=\"" . $entry->get_id() . "\" href=\"#" . $entry->get_id() . "\">" . $entry->get_date() . " - " . $entry->title . "</a></h2>\n";
-			if ( $diary->enable_private ) {
-				$contents = $entry->get_everything();
-			} else {
-				$contents = $entry->get_public();
-			}
+	$end_time = time();
+	$start_time = $end_time - (7 * 24 * 60 * 60);
+	$slice = '/(';
+	for ($i = $start_time; $i < $end_time; $i += (24 * 60 * 60)) {
+		$slice .= strftime('%Y%m%d', $i);
+		$slice .= '|';
+	}
+	$slice = rtrim($slice, '|');
+	$slice .= ')/';
+	
 
-			$pictures = $entry->get_pictures();
-			$objects = $entry->get_objects();
-			$ignore_nl = FALSE;
-			foreach ( $contents as $content ) {
-				$content = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]", "<a href=\"\\0\">\\0</a>", $content);
-				foreach ( $pictures as $picture ) {
-					$content = ereg_replace( basename( $picture ), "<div class=\"img\" align=\"center\"><img src=\"" . $picture . "\" /></div>", $content);
-				}
-				foreach ( $objects as $object ) {
-					$content = ereg_replace( basename( $object ), "<a href=\"" . $object . "\">" . basename( $object ) . "</a>", $content );
-				}
 
-				if (stristr(trim($content),'<pre>') != FALSE) {
-					$ignore_nl = TRUE;
-				}
-				if (stristr(trim($content),'</pre>') != FALSE) {
-					$ignore_nl = FALSE;
-				}
-				if (!$ignore_nl) {
-					echo "\t\t<p class=\"content\">" . $content . "</p>\n";
-				} else {
-					echo $content . "\n";
-				}
-			}
+	$objects = $diary->slice($slice);
+	$entries = array();
 
-			echo "</div>\n\n";
+	$class =& new ReflectionClass('daily_log');
+	foreach ($objects as $object) {
+		if ($class->isInstance($object)) {
+			$entries[$object->get_date()] = $object;
 		}
 	}
-	?>
+	arsort($entries);
+
+
+	foreach ($entries as $entry) {
+		echo "<div class='entry'>\n";
+		echo "\t<h2><a name='" . $entry->get_id() . "' href='#" . $entry->get_id() . "'>" . $entry->get_date() . ' - ' . $entry->get_title() . "</a></h2>\n";
+		if ($show_private) {
+			$contents = $entry->get_everything();
+		} else {
+			$contents = $entry->get_public();
+		}
+
+		$ignore_nl = FALSE;
+		foreach ( $contents as $content ) {
+			$content = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]", "<a href=\"\\0\">\\0</a>", $content);
+/*foreach ($pictures as $picture) {
+				$content = ereg_replace( basename( $picture ), "<div class=\"
+			img\" align=\"center\"><img src=\"" . $picture . "\" /></div>",
+			$content);
+			}
+			foreach ( $objects as $object ) {
+				$content = ereg_replace( basename( $object ), "<a href=\"" .
+			$object . "\">" . basename( $object ) . "</a>", $content );
+			}
+*/
+			if (stristr(trim($content), '<pre>') != FALSE) {
+				$ignore_nl = TRUE;
+			}
+			if (stristr(trim($content), '</pre>') != FALSE) {
+				$ignore_nl = FALSE;
+			}
+			if (!$ignore_nl) {
+				echo "\t\t<p class='content'>" . $content . "</p>\n";
+			} else {
+				echo $content . "\n";
+			}
+		}
+			echo "</div>\n\n";
+	}
+?>
 
 </body>
 </html>
