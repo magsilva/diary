@@ -22,7 +22,7 @@ require_once(dirname(__FILE__) . '/object.class.php');
 /**
 * File extension to be used.
 */
-define('LOG_EXTENSION_PATTERN', '(\.txt)');
+define('LOG_EXTENSION_PATTERN', '(\.txt$)');
 
 
 /**
@@ -53,19 +53,20 @@ abstract class log extends object
 	{
 		$file = fopen($this->filename, 'r');
 		$this->title = trim(fgets($file));
-		$record = NULL;
 		$start_new_paragraph = TRUE;
+		$count = 0;
 		
 		while (!feof($file)) {
 			$content = trim(fgets($file));
 			if (strlen($content) > 0) {
 				if ($start_new_paragraph) {
-					$record = array();
-					$this->records[] =& $record;
+					$count++;
+					$this->records[$count] = array();
 					$start_new_paragraph = FALSE;
 				}
 
-				if ($content{0} == "#") {
+				$record =& $this->records[$count];
+				if ($content[0] == "#") {
 					$content = trim(ltrim($content, "\#"));
 					$record['private'] = TRUE;
 				} else {

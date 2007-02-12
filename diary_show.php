@@ -45,26 +45,30 @@
 		}
 	}
 
-
-	/**
-	* Check if a specified data has been request or it's to show last week's
-	* activity.
-	*/
-	$end_time = time();
-	$start_time = $end_time - (7 * 24 * 60 * 60);
-	$slice = '/(';
-	for ($i = $start_time; $i < $end_time; $i += (24 * 60 * 60)) {
-		$slice .= strftime('%Y%m%d', $i);
-		$slice .= '|';
+	$objects = array();
+	$min_count = 7;
+	$days = 7;
+	$max_days = 60;
+	while (count($objects) < $min_count && $days < $max_days) {
+		/**
+		* Check if a specified data has been request or it's to show last week's
+		* activity.
+		*/
+		$end_time = time();
+		$start_time = $end_time - ($days * 24 * 60 * 60);
+		$slice = '/(';
+		for ($i = $start_time; $i < $end_time; $i += (24 * 60 * 60)) {
+			$slice .= strftime('%Y%m%d', $i);
+			$slice .= '|';
+		}
+		$slice = rtrim($slice, '|');
+		$slice .= ')/';
+			
+		$objects =& $diary->slice($slice);
+		$days++;
 	}
-	$slice = rtrim($slice, '|');
-	$slice .= ')/';
-	
 
-
-	$objects = $diary->slice($slice);
 	$entries = array();
-
 	$class =& new ReflectionClass('daily_log');
 	foreach ($objects as $object) {
 		if ($class->isInstance($object)) {
