@@ -74,7 +74,11 @@ abstract class log extends object
 				}
 				
 				$content .= " ";
-				$record['content'] .= $content;
+				if (!array_key_exists('content', $record)) {
+					$record['content'] = $content;
+				} else {
+					$record['content'] .= $content;
+				}
 			} else {
 				$start_new_paragraph = TRUE;
 			}
@@ -83,7 +87,7 @@ abstract class log extends object
 
 	public function get_date()
 	{
-		return ucfirst(strftime("%e/%m/%G", $this->date));
+		return $this->date;
 	}
 	
 	public function get_id()
@@ -94,6 +98,11 @@ abstract class log extends object
 	public function get_title()
 	{
 		return $this->title;
+	}
+
+	public function get_content()
+	{
+		return $this->get_public();
 	}
 
 	/**

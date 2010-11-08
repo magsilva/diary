@@ -20,7 +20,7 @@ Copyright (C) 2003 Marco Aurelio Graciotto Silva <magsilva@gmail.com>
 /**
 * Diary's name, used as title.
 */
-define('NAME', 'My life is a glass tank');
+define('NAME', 'Diary');
 
 /**
 * Diary's author.
@@ -30,12 +30,12 @@ define('AUTHOR', 'Marco Aurélio Graciotto Silva');
 /**
 * Diary's description.
 */
-define('DESCRIPTION', 'Life boat');
+define('DESCRIPTION', 'Personal (and private) diary');
 
 /**
 * Directory with diary's entries.
 */
-define('BASE_DIR', '/home/magsilva/public_html/Diary/data');
+define('BASE_DIR', '/home/magsilva/Personal/Diary/');
 
 /**
 * Password to be used.
@@ -45,6 +45,7 @@ define('PASSWORD', '');
 /**
  * Root URL.
  */
- define('ROOT_URL', '')
+define('BASE_URL', 'http://www.ironiacorp.com/users/magsilva/Diary/index.php');
 
+date_default_timezone_set('America/Sao_Paulo');
 ?>

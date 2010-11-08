@@ -17,8 +17,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 Copyright (C) 2003 Marco Aurelio Graciotto Silva <magsilva@gmail.com>
 */
 
-require_once('config.php');
-require_once('common.php');
+require_once(dirname(__FILE__) . '/config.php');
+require_once(dirname(__FILE__) . '/common.php');
 foreach (glob(dirname(__FILE__) . '/objects/*.class.php') as $file) {
 	require_once($file);
 }
@@ -38,6 +38,11 @@ class diary
 	 * Absolute base dir.
 	 */
 	private $base_dir;
+
+	/**
+	 * Base URL.
+	 */
+	private $url;
 	
 	/**
 	 * Title.
@@ -65,9 +70,9 @@ class diary
 	private $password;
 	
 	/**
-	 * Full namespace.
+	 * Full type.
 	 */
-	private $namespace;
+	private $type;
 	
 	/**
 	 * Tags directory.
@@ -124,6 +129,17 @@ class diary
 	{
 		return $this->base_dir;
 	}
+
+	private function set_url($url)
+	{
+		$this->url = $url;
+	}
+	
+	public function get_url()
+	{
+		return $this->url;
+	}
+	
 	
 	private function set_password($password)
 	{
@@ -148,8 +164,9 @@ class diary
 		$this->set_description(DESCRIPTION);
 		$this->set_base_dir(BASE_DIR);
 		$this->set_password(PASSWORD);
+		$this->set_url(BASE_URL);
 
-		$this->namespace = array();
+		$this->type = array();
 
 		$this->tags = array();
 	
@@ -159,19 +176,19 @@ class diary
 	private function tag($tag, $obj)
 	{
 		$tag = strval($tag);
-		if ($this->tags[$tag] == NULL) {
+		if (!array_key_exists($tag, $this->tags) || $this->tags[$tag] == NULL) {
 			$this->tags[$tag] = array();
 		}
 		$this->tags[$tag][] = $obj;
 	}
 	
-	private function namespace($name, $obj)
+	private function type($name, $obj)
 	{
 		$name = strval($name);
-		if ($this->namespace[$name] == NULL) {
-			$this->namespace[$name] = array();
+		if (!array_key_exists($name, $this->type) || $this->type[$name] == NULL) {
+			$this->type[$name] = array();
 		}
-		$this->namespace[$name][] = $obj;
+		$this->type[$name][] = $obj;
 	}
 	
 	public function read_objects($dir)
@@ -186,7 +203,7 @@ class diary
 		while (false !== ($obj_filename = $dir->read())) {
 			if ($obj_filename != "." && $obj_filename != "..") {
 				$full_filename = $dir->path . "/" . $obj_filename;
-				$this->namespace($obj_filename, $full_filename);
+				$this->type($obj_filename, $full_filename);
 				
 				if (is_file($full_filename)) {
 					$this->tag('File', $full_filename);
