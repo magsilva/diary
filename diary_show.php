@@ -70,7 +70,7 @@
 	}
 
 	$entries = array();
-	$class =& new ReflectionClass('daily_log');
+	$class = new ReflectionClass('daily_log');
 	foreach ($objects as $object) {
 		if ($class->isInstance($object)) {
 			$entries[$object->get_id()] = $object;

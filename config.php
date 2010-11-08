@@ -45,7 +45,7 @@ define('PASSWORD', '');
 /**
  * Root URL.
  */
-define('BASE_URL', 'http://www.ironiacorp.com/users/magsilva/Diary/index.php');
+define('BASE_URL', 'http://www.ironiacorp.com/Members/magsilva/Diary/index.php');
 
 date_default_timezone_set('America/Sao_Paulo');
 ?>

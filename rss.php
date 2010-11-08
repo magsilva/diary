@@ -44,7 +44,7 @@ while (count($objects) < $min_count && $days < $max_days) {
 }
 
 $entries = array();
-$class =& new ReflectionClass('daily_log');
+$class = new ReflectionClass('daily_log');
 foreach ($objects as $object) {
 	if ($class->isInstance($object)) {
 		$entries[$object->get_date()] = $object;
