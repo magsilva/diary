@@ -22,7 +22,7 @@ require_once(dirname(__FILE__) . '/object.class.php');
 /**
 * File extension to be used.
 */
-define('GOAL_EXTENSION', 'goal$');
+define('GOAL_EXTENSION_PATTERN', 'goal$');
 
 
 /**

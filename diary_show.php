@@ -89,7 +89,7 @@
 		}
 
 		$ignore_nl = FALSE;
-		foreach ( $contents as $content ) {
+		foreach ($contents as $content) {
 			$content = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]", "<a href=\"\\0\">\\0</a>", $content);
 /*foreach ($pictures as $picture) {
 				$content = ereg_replace( basename( $picture ), "<div class=\"

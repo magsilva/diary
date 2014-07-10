@@ -240,17 +240,18 @@ class diary
 						$this->read_objects(dir($full_filename));
 						$depth--;
 					} else {
-						if (ereg(GOAL_EXTENSION , $obj_filename)) {
+						if (ereg(GOAL_EXTENSION_PATTERN, $obj_filename)) {
 							$obj = new year_goals($temp[0], $full_filename);
 							$this->tag('YearGoals', $obj);
 							$this->tag($temp[0], $obj);
 						}
-	
-						if (ereg(LOG_EXTENSION , $obj_filename)) {
+							
+						if (ereg(LOG_EXTENSION_PATTERN, $obj_filename)) {
 							$obj = new yearly_log($temp[0], $full_filename);
 							$this->tag('YearlyLog', $obj);
 							$this->tag($temp[0], $obj);
 						}
+						
 					}
 				}
 								
@@ -264,13 +265,13 @@ class diary
 				}
 				if ($depth == 0 && ereg('([0-9]{4})([0-9]{2})', $obj_filename, $temp)) {
 					if ($temp[0] == $year) {
-						if (ereg(GOAL_EXTENSION , $obj_filename)) {
+						if (ereg(GOAL_EXTENSION_PATTERN, $obj_filename)) {
 							$obj = new month_goals($temp[1], $temp[0], $full_filename);
 							$this->tag('MonthGoals', $obj);
 							$this->tag($temp[1] . $temp[0], $obj);
 						}
 	
-						if (ereg(LOG_EXTENSION , $obj_filename)) {
+						if (ereg(LOG_EXTENSION_PATTERN, $obj_filename)) {
 							$obj = new monthly_log($temp[1], $temp[0], $full_filename);
 							$this->tag('MonthlyLog', $obj);
 							$this->tag($temp[1] . $temp[0], $obj);
@@ -286,9 +287,10 @@ class diary
 						$depth--;
 					}
 				}
+
 				if ($depth == 1 && preg_match('/' . DATE_PATTERN . '/', $obj_filename, $temp)) {
 					if ($temp[1] == $year && $temp[2] == $month) {
-						if (ereg(GOAL_EXTENSION , $obj_filename)) {
+						if (ereg(GOAL_EXTENSION_PATTERN, $obj_filename)) {
 							$obj = new day_goals($temp[2], $temp[1], $temp[0], $full_filename);
 							$this->tag('DayGoals', $obj);
 							$this->tag($temp[2] . $temp[1] . $temp[0], $obj);
