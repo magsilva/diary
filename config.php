@@ -30,12 +30,12 @@ define('AUTHOR', 'Marco Aurélio Graciotto Silva');
 /**
 * Diary's description.
 */
-define('DESCRIPTION', 'Personal (and private) diary');
+define('DESCRIPTION', 'Notes from a cranky nerd');
 
 /**
 * Directory with diary's entries.
 */
-define('BASE_DIR', '/home/magsilva/Personal/Diary/');
+define('BASE_DIR', dirname(__FILE__) . '/data');
 
 /**
 * Password to be used.
@@ -45,7 +45,7 @@ define('PASSWORD', '');
 /**
  * Root URL.
  */
-define('BASE_URL', 'http://www.ironiacorp.com/Members/magsilva/Diary/index.php');
+define('BASE_URL', 'http://www.ironiacorp.com/index.php');
 
 date_default_timezone_set('America/Sao_Paulo');
 ?>

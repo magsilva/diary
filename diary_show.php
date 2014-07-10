@@ -34,9 +34,7 @@
 	* Check if private data must be shown (check the password).
 	*/
 	if (isset($_REQUEST['password']) && ! empty($_REQUEST['password'])) {
-		if ($diary->is_password_correct($_REQUEST['password'])) {
-			$show_private = TRUE;
-		}
+		$diary->is_password_correct($_REQUEST['password']);
 	}
 
         if (isset($_REQUEST['slice'])) {

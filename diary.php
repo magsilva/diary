@@ -324,12 +324,12 @@ class diary
 		$data = "";
 
 		if (isset($slice) && ! empty($slice)) {
-			$objects =& $this->slice($slice);
+			$objects = $this->slice($slice);
 		} else {
 			$objects = array();
 			$min_count = 7;
 			$days_increment = 7;
-			$max_days = 3000;
+			$max_days = 30;
 			$days = 1 * $days_increment;
 			while (count($objects) < $min_count && $days < $max_days) {
 				/**
@@ -346,7 +346,7 @@ class diary
 				$slice = rtrim($slice, '|');
 				$slice .= ')/';
 
-				$objects =& $this->slice($slice);
+				$objects = $this->slice($slice);
 				$days += $days_increment;
 			}
 		}
