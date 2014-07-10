@@ -110,16 +110,6 @@ class diary
 		return $this->description;
 	}
 
-	private function set_private($private)
-	{
-		$this->enable_private = $private;
-	}
-	
-	public function get_private()
-	{
-		return $this->enable_private;
-	}
-	
 	private function set_base_dir($base_dir)
 	{
 		$this->base_dir = dir($base_dir);
@@ -149,9 +139,12 @@ class diary
 	public function is_password_correct($password)
 	{
 		if ($this->password === $password) {
+			$this->enable_private = true;
 			return true;
+		} else {
+			$this->enable_private = false;
+			return false;
 		}
-		return false;
 	}
 		
 	/**
@@ -324,6 +317,89 @@ class diary
 		}
 		
 		return $result;
+	}
+
+
+	public function get_data($slice = NULL) {
+		$data = "";
+
+		if (isset($slice) && ! empty($slice)) {
+			$objects =& $this->slice($slice);
+		} else {
+			$objects = array();
+			$min_count = 7;
+			$days_increment = 7;
+			$max_days = 3000;
+			$days = 1 * $days_increment;
+			while (count($objects) < $min_count && $days < $max_days) {
+				/**
+				* Check if a specified data has been request or it's to show last week's
+				* activity.
+				*/
+				$end_time = time();
+				$start_time = $end_time - ($days * 24 * 60 * 60);
+				$slice = '/(';
+				for ($i = $start_time; $i < $end_time; $i += (24 * 60 * 60)) {
+					$slice .= strftime('%Y%m%d', $i);
+					$slice .= '|';
+				}
+				$slice = rtrim($slice, '|');
+				$slice .= ')/';
+
+				$objects =& $this->slice($slice);
+				$days += $days_increment;
+			}
+		}
+
+		$entries = array();
+		$class = new ReflectionClass('daily_log');
+		foreach ($objects as $object) {
+			if ($class->isInstance($object)) {
+				$entries[$object->get_id()] = $object;
+			}
+		}
+		arsort($entries);
+
+
+		foreach ($entries as $entry) {
+			$data .= "<div class='entry'>\n";
+			$data .= "\t<h2><a name='" . $entry->get_id() . "' href='#" . $entry->get_id() . "'>" . ucfirst(strftime("%e/%m/%G", $entry->get_date())) . ' - ' . $entry->get_title() . "</a></h2>\n";
+			if ($this->enable_private) {
+				$contents = $entry->get_everything();
+			} else {
+				$contents = $entry->get_public();
+			}
+
+			$ignore_nl = FALSE;
+			foreach ($contents as $content) {
+				$content = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]", "<a href=\"\\0\">\\0</a>", $content);
+				/*
+				foreach ($pictures as $picture) {
+					$content = ereg_replace( basename( $picture ), "<div class=\"
+						img\" align=\"center\"><img src=\"" . $picture . "\" /></div>",
+						$content);
+				}
+				foreach ( $objects as $object ) {
+					$content = ereg_replace( basename( $object ), "<a href=\"" .
+						$object . "\">" . basename( $object ) . "</a>", $content );
+				}
+				*/
+				if (stristr(trim($content), '<pre>') != FALSE) {
+					$ignore_nl = TRUE;
+				}
+				if (stristr(trim($content), '</pre>') != FALSE) {
+					$ignore_nl = FALSE;
+				}
+				if (!$ignore_nl) {
+					$data .= "\t\t<p class='content'>" . $content . "</p>\n";
+				} else {
+					$data .= $content . "\n";
+				}
+			}
+			$data .= "</div>\n\n";
+		}
+
+		return $data;
 	}
 }
 ?>
